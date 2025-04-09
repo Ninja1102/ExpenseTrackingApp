@@ -7,6 +7,7 @@ import com.ust.ExpenseTrackingApp.model.Expense;
 import com.ust.ExpenseTrackingApp.model.User;
 import com.ust.ExpenseTrackingApp.service.ExpenseService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -44,9 +45,17 @@ public class ExpenseController {
 
     @GetMapping("/summary")
     public ResponseEntity<ExpenseSummaryResponse> getSummary(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        User user = userDetails.getUser(); // Extract original User entity
-        return ResponseEntity.ok(expenseService.getExpenseSummary(user));
+        try {
+            User user = userDetails.getUser();
+            ExpenseSummaryResponse summary = expenseService.getExpenseSummary(user);
+            return ResponseEntity.ok(summary);
+        } catch (Exception e) {
+            e.printStackTrace(); // Logs the full error in the console
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ExpenseSummaryResponse(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO));
+        }
     }
+
 
 
 

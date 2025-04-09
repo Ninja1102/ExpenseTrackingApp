@@ -38,11 +38,7 @@ public class ExpenseService {
     }
 
     public ExpenseSummaryResponse getExpenseSummary(User user) {
-        if (user == null) {
-            throw new ExpenseNotFoundException("User is not authenticated.");
-        }
-
-        // Define date ranges
+        // No need to fetch again, we already have user
         LocalDate today = LocalDate.now();
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = today.atTime(23, 59, 59);
@@ -51,7 +47,6 @@ public class ExpenseService {
         LocalDate startOfQuarter = today.minusMonths(3).with(TemporalAdjusters.firstDayOfMonth());
         LocalDate startOfYear = today.with(TemporalAdjusters.firstDayOfYear());
 
-        // Calculate expenses
         BigDecimal dailyExpense = expenseRepository.calculateTotalExpenses(user, startOfDay, endOfDay);
         BigDecimal monthlyExpense = expenseRepository.calculateTotalExpenses(user, startOfMonth.atStartOfDay(), endOfDay);
         BigDecimal quarterlyExpense = expenseRepository.calculateTotalExpenses(user, startOfQuarter.atStartOfDay(), endOfDay);
@@ -66,6 +61,7 @@ public class ExpenseService {
                 avgMonthlyExpense != null ? avgMonthlyExpense : BigDecimal.ZERO
         );
     }
+
 
 
     public void deleteExpense(Long id, String username) {
