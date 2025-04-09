@@ -1,5 +1,6 @@
 package com.ust.ExpenseTrackingApp.controller;
 
+import com.ust.ExpenseTrackingApp.config.CustomUserDetails;
 import com.ust.ExpenseTrackingApp.dto.ExpenseRequest;
 import com.ust.ExpenseTrackingApp.dto.ExpenseSummaryResponse;
 import com.ust.ExpenseTrackingApp.model.Expense;
@@ -42,10 +43,11 @@ public class ExpenseController {
     }
 
     @GetMapping("/summary")
-    public ResponseEntity<ExpenseSummaryResponse> getSummary(@AuthenticationPrincipal User user) {
-        ExpenseSummaryResponse summary = expenseService.getExpenseSummary(user);
-        return ResponseEntity.ok(summary);
+    public ResponseEntity<ExpenseSummaryResponse> getSummary(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        User user = userDetails.getUser(); // Extract original User entity
+        return ResponseEntity.ok(expenseService.getExpenseSummary(user));
     }
+
 
 
     @DeleteMapping("/{id}")
